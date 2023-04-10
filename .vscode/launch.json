@@ -1,0 +1,65 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "dezog",
+            "request": "launch",
+            "name": "Simulator - ZX48K Spectrum",
+            "remoteType": "zsim",
+            "zsim": {
+                "visualMemory": true,
+                "memoryModel": "ZX48K",
+                "ulaScreen": false,
+                "zxBorderWidth": 20,
+                "vsyncInterrupt": true,
+                "zxKeyboard": true,
+                "zxBeeper": false
+            },
+            "sjasmplus": [
+                {
+                    "path": "zara_forth_ut.sld",
+                }
+            ],
+            "commandsAfterLaunch": [],
+            "history": {
+                "reverseDebugInstructionCount": 1000000,
+                "spotCount": 10,
+                "codeCoverageEnabled": true
+            },
+            "startAutomatically": false,
+            "rootFolder": "${workspaceFolder}",
+            "load": "zara_forth_ut.sna",
+            "topOfStack": "stack_top"
+        },
+        {
+            "type": "dezog",
+            "request": "launch",
+            "name": "Unit Tests - ZX48K Spectrum",
+            "unitTests": true,
+            "presentation": {
+                "hidden": true
+            },
+            "remoteType": "zsim",
+            "zsim": {
+                "visualMemory": true,
+                "memoryModel": "ZX48K",
+                "ulaScreen": false
+            },
+            "sjasmplus": [
+                {
+                    "path": "zara_forth_ut.sld",
+                }
+            ],
+            "commandsAfterLaunch": [],
+            "history": {
+                "reverseDebugInstructionCount": 1000000,
+                "spotCount": 10,
+                "codeCoverageEnabled": true
+            },
+            "startAutomatically": true,
+            "rootFolder": "${workspaceFolder}",
+            "load": "zara_forth_ut.sna",
+            "preLaunchTask": "build unit tests"
+        }
+    ]
+}
