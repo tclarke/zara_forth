@@ -61,6 +61,10 @@ UT_IsDigit:
     call parsing.isdigit
     TEST_FLAG_NZ
 
+    ld      a, '5'
+    call parsing.isdigit
+    TEST_FLAG_NZ
+
     ld      a, '9'
     call parsing.isdigit
     TEST_FLAG_NZ
