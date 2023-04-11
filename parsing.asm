@@ -45,4 +45,22 @@ strcmp:
     inc     de
     jr      strcmp
 
+;
+; Checks to see if the character is a digit or not.
+;
+; @param a  - The character byte to check
+; @return z - clear if the character is a digit, set otherwise
+;
+isdigit:
+    sub     '0'
+    jp      s, 1F       ; if a was < the 0 ascii code then we aren't a digit
+    sub     10
+    jp      ns, 1F      ; if a was > the 9 ascii code then we aren't a digit
+    ld      a, 0
+    cp      1           ; clear the Z flag
+    ret
+1   ld      a, 1
+    cp      1           ; set the Z flag
+    ret
+
     ENDMODULE

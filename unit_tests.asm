@@ -56,4 +56,22 @@ UT_StrCmp:
     TEST_MEMORY_BYTE de, 31h  ; '1'
     TC_END
 
+UT_IsDigit:
+    ld      a, '0'
+    call parsing.isdigit
+    TEST_FLAG_NZ
+
+    ld      a, '9'
+    call parsing.isdigit
+    TEST_FLAG_NZ
+
+    ld      a, '/'
+    call parsing.isdigit
+    TEST_FLAG_Z
+
+    ld      a, ':'
+    call parsing.isdigit
+    TEST_FLAG_Z
+    TC_END
+
     ENDMODULE
