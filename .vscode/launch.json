@@ -47,7 +47,7 @@
             },
             "sjasmplus": [
                 {
-                    "path": "zara_forth_ut.sld",
+                    "path": "zara_forth.sld",
                 }
             ],
             "commandsAfterLaunch": [],
@@ -58,7 +58,7 @@
             },
             "startAutomatically": true,
             "rootFolder": "${workspaceFolder}",
-            "load": "zara_forth_ut.sna",
+            "load": "zara_forth.sna",
             "preLaunchTask": "build unit tests"
         }
     ]
