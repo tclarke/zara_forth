@@ -59,7 +59,7 @@
             "startAutomatically": true,
             "rootFolder": "${workspaceFolder}",
             "load": "zara_forth.sna",
-            "preLaunchTask": "build unit tests"
+            "preLaunchTask": "build main"
         }
     ]
 }

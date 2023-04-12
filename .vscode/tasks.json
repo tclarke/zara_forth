@@ -4,7 +4,7 @@
         {
             "label": "build main",
             "type": "shell",
-            "command": "c:\\dev\\z80\\sjasmplus-1.20.2.win\\sjasmplus.exe",
+            "command": "${workspaceFolder}/../sjasmplus/sjasmplus",
             "args": [
                 "--sld=zara_forth.sld",
                 "--fullpath",
@@ -23,31 +23,6 @@
             },
             "group": {
                 "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "label": "build unit tests",
-            "type": "shell",
-            "command": "c:\\dev\\z80\\sjasmplus-1.20.2.win\\sjasmplus.exe",
-            "args": [
-                "--sld=zara_forth_ut.sld",
-                "--fullpath",
-                "unit_tests.asm"
-            ],
-            "problemMatcher": {
-                "owner": "sjasmplus",
-                "fileLocation": "autoDetect",
-                "pattern": {
-                    "regexp": "^(.*)\\((\\d+)\\):\\s+(warning|error):\\s+(.*)$",
-                    "file": 1,
-                    "line": 2,
-                    "severity": 3,
-                    "message": 4
-                }
-            },
-            "group": {
-                "kind": "test",
                 "isDefault": true
             }
         },
