@@ -22,13 +22,26 @@
     ; for the unit tests.
     ret
 
-    MODULE TestSuite_IO     ; Tests for I/O and parsing
+    MODULE TestSuite_Parsing     ; Tests parsing
 
-test_str1:  byte     " 1 22 +\N\0"
+test_str1:  byte     " 1 22 +\N"
 UT_SkipWhitespace:
     ld      hl, test_str1
+    ld      c, 8
     call    parsing.skip_whitespace
     TEST_MEMORY_BYTE hl, '1'
+    TEST_FLAG_NZ
+
+    call    parsing.skip_whitespace
+    TEST_MEMORY_BYTE hl, '2'
+    TEST_FLAG_NZ
+
+    call    parsing.skip_whitespace
+    TEST_MEMORY_BYTE hl, '+'
+    TEST_FLAG_NZ
+
+    call    parsing.skip_whitespace
+    TEST_FLAG_Z
     TC_END
 
 test_str2:  byte     " 1 22 +\0"

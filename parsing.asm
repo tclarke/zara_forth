@@ -8,19 +8,32 @@
 
 WHITESPACE  =       20h     ; SPACE
 NULL        =       0       ; NULL
-BUFFER_LEN  =       255
+BUFFER_LEN  =       255     ; Maximum buffer length
+
+; Input buffer and current length
+ib_len:       BYTE      0
+input_buffer: BLOCK     BUFFER_LEN
+
+; Parse area, >IN, and current length
+; Double buffer to minimize dropped input characters
+pa_idx:       BYTE      0
+pa_len:       BYTE      0
+parse_area:   BLOCK     BUFFER_LEN
 
 ;
 ; Skip whitespace
 ;
 ; @param hl  - Address of the buffer
-;
+; @param c   - Maximum length of the buffer.
 ; @return hl - Address of the first byte of the token
+; @return z  - Clear if whitespace was found, set otherwise
 ;
 skip_whitespace:
+    ld          b, 0            ; cpir uses the 16-bit bc but we're only allowing 8-bit lengths
     ld          a, WHITESPACE
-    ld          bc, BUFFER_LEN
     cpir
+    ld          a, c
+    cp          0               ; Check if we hit the end of the buffer so z is set correctly
     ret
 
 ;
@@ -62,5 +75,23 @@ isdigit:
 1   ld      a, 1
     cp      1           ; set the Z flag
     ret
+
+;
+; Macro to copy the input buffer to the parse area
+; Clobbers hl, de, and bc
+    MACRO .COPY2PARSE
+    ld      hl, input_buffer
+    ld      de, parse_area
+    ld      bc, ib_len
+    ldir
+    ENDM
+
+;
+; Locate the start and end of a token.
+;
+tokenize:
+    ld      hl, parse_area
+    ld      bc, pa_idx
+    add     hl, bc
 
     ENDMODULE
