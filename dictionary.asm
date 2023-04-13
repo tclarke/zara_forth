@@ -6,9 +6,9 @@
 
         MODULE  dictionary
 
-ENTRY_IMPL:     equ     0   ; Pointer to the implementation (execution address)
-ENTRY_WLEN:     equ     2   ; Length of the defined word
-ENTRY_WORD:     equ     3   ; Start of the word
+ENTRY_IMPL:     equ     0   ; (word) Pointer to the implementation (execution address)
+ENTRY_WLEN:     equ     2   ; (byte) Length of the defined word
+ENTRY_WORD:     equ     3   ; (var bytes) Start of the word
 
 DICT_LENGTH:    equ     256 ; Maximum dictionary size
 dict:           BLOCK   DICT_LENGTH, 00h
@@ -33,26 +33,54 @@ strcmp:
         inc     hl
         inc     de
         djnz    1B
-        xor     a       ; set z indicating equal
+        cp      a       ; set z indicating equal
         ret
 
 ;
 ; Locate a word in the dictionary
 ;
+; @param ix  - Address of the dictionary
 ; @param hl  - The string to match
 ; @param bc  - The string length
 ;
 ; @return hl - The address of the word's implementation or 0000h if it isn't found
+; @return f  - z set if word found else z clear
 ;
 find_word:
-        ld      ix, dict ; the head of the list
-
-        push    hl     ; save these since .strcmp will change them
+1:      push    hl     ; save these since .strcmp will change them
         push    bc
-        ld      de, (ix+ENTRY_WORD)
-        ld      a, (ix+ENTRY_WLEN)
 
+        ld      de, ix
+        .3 inc de
+        ld      a, (ix+ENTRY_WLEN)
+        or      a       ; equiv to cp 0
+        jr      z, 3F   ; end of list
+        call    strcmp
+        jr      z, 2F   ; found the word
+
+        ; go to the next entry
+        ld      hl, ix
+        ld      b, 0
+        ld      c, (ix+ENTRY_WLEN)
+        add     hl, bc
+        ld      bc, ENTRY_WORD
+        add     hl, bc
+        ld      ix, hl
+
+        ; restore the saved vars and continue the search
+        pop     bc
+        pop     hl
+        jr      1B 
+
+2:      .4 inc  sp      ; drop bc and hl
+        ld      hl, (ix+ENTRY_IMPL)
+        ret             ; z is already set
+
+3:      .4 inc  sp      ; drop bc and hl
+        ld      hl, 00h
+        or      1       ; clear z
         ret
+
 
 ;
 ; Insert a word into the dictionary

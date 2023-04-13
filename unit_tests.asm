@@ -150,4 +150,50 @@ UT_Strcmp:
 
     TC_END
 
+test_dict:
+w1: WORD    0001h
+    BYTE    4
+    BYTE    "word"
+w2: WORD    0002h
+    BYTE    1
+    BYTE    "+"
+w3: WORD    0003h
+    BYTE    2
+    BYTE    "zz"
+el: WORD    0000h
+    BYTE    0
+
+    MACRO   INIT_FINDWORD   word?
+    ld      ix, test_dict
+    ld      hl, word?+2
+    ld      b, 00h
+    ld      c, (hl)
+    inc     hl
+    ENDM
+
+UT_FindWord:
+    INIT_FINDWORD w1
+    call    dictionary.find_word
+    TEST_FLAG_Z
+    nop ; ASSERTION hl == 1
+
+    INIT_FINDWORD w2
+    call    dictionary.find_word
+    TEST_FLAG_Z
+    nop ; ASSERTION hl == 2
+
+    INIT_FINDWORD w3
+    call    dictionary.find_word
+    TEST_FLAG_Z
+    nop ; ASSERTION hl == 3
+
+    ld      ix, test_dict
+    ld      hl, test_str1
+    ld      bc, len1
+    call    dictionary.find_word
+    TEST_FLAG_NZ
+    nop ; ASSERTION hl == 0
+
+    TC_END
+
     ENDMODULE
