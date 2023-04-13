@@ -22,14 +22,6 @@ len4:       equ     8
 test_str5:  byte    "1234\n"         ; no whitespace
 len5:       equ     5
 
-    MACRO   STRCPY  dst?, src?, n?
-    ld      hl, src?
-    ld      de, dst?
-    ld      bc, n?
-    ldir
-    ENDM
-
-
 ; Initialization routine called before all unit tests are
 ; started.
     UNITTEST_INITIALIZE
@@ -82,7 +74,10 @@ UT_SkipWhitespace:
     TC_END
 
     MACRO   SETUP_PARSENAME  str?, n?
-    STRCPY  parsing.input_buffer, str?, n?
+    ld      hl, str?
+    ld      de, parsing.input_buffer
+    ld      bc, n?
+    ldir
     ld      a, 0
     ld      (parsing.parse_idx), a
     ld      a, n?
@@ -171,6 +166,16 @@ el: WORD    0000h
     inc     hl
     ENDM
 
+    MACRO   INIT_INSERTWORD word?
+    ld      ix, dictionary.dict
+    ld      hl, word?
+    ld      de, (hl)
+    .2 inc  hl
+    ld      b, 00h
+    ld      c, (hl)
+    inc     hl
+    ENDM
+
 UT_FindWord:
     INIT_FINDWORD w1
     call    dictionary.find_word
@@ -193,6 +198,33 @@ UT_FindWord:
     call    dictionary.find_word
     TEST_FLAG_NZ
     nop ; ASSERTION hl == 0
+
+    TC_END
+
+UT_InsertWord:
+    INIT_INSERTWORD w3
+    call    dictionary.insert_word
+
+    INIT_INSERTWORD w2
+    call    dictionary.insert_word
+
+    INIT_INSERTWORD w1
+    call    dictionary.insert_word
+
+    INIT_INSERTWORD w1
+    call dictionary.find_word
+    TEST_FLAG_Z
+    nop ; ASSERTION hl == 1
+
+    INIT_INSERTWORD w2
+    call dictionary.find_word
+    TEST_FLAG_Z
+    nop ; ASSERTION hl == 2
+
+    INIT_INSERTWORD w3
+    call dictionary.find_word
+    TEST_FLAG_Z
+    nop ; ASSERTION hl == 3
 
     TC_END
 
