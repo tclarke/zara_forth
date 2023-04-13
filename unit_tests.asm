@@ -9,6 +9,26 @@
     include "unit_tests.inc"
 
     include "parsing.asm"
+    include "dictionary.asm"
+
+test_str1:  byte    "123 45 -\N"     ; bog standard input string
+len1:       equ     9
+test_str2:  byte    " 1 22 +\N"      ; starts with a space
+len2:       equ     10
+test_str3:  byte    "1 22 +"         ; doesn't end in a newline
+len3:       equ     6
+test_str4:  byte    "1 21  +\N"      ; 2 spaces in a row
+len4:       equ     8
+test_str5:  byte    "1234\n"         ; no whitespace
+len5:       equ     5
+
+    MACRO   STRCPY  dst?, src?, n?
+    ld      hl, src?
+    ld      de, dst?
+    ld      bc, n?
+    ldir
+    ENDM
+
 
 ; Initialization routine called before all unit tests are
 ; started.
@@ -23,18 +43,6 @@
     ret
 
     MODULE TestSuite_Parsing     ; Tests parsing
-
-test_str1:  byte    "123 45 -\N"     ; bog standard input string
-len1:       equ     9
-test_str2:  byte    " 1 22 +\N"      ; starts with a space
-len2:       equ     10
-test_str3:  byte    "1 22 +"         ; doesn't end in a newline
-len3:       equ     6
-test_str4:  byte    "1 21  +\N"      ; 2 spaces in a row
-len4:       equ     8
-test_str5:  byte    "1234\n"         ; no whitespace
-len5:       equ     5
-
 ; TODO: UT_FindWhitespace and UT_SkipWhitespace should have
 ; ASSERT HL == test_str1+3
 ; tests, but I keep getting "test_str1 label not found".
@@ -74,10 +82,7 @@ UT_SkipWhitespace:
     TC_END
 
     MACRO   SETUP_PARSENAME  str?, n?
-    ld      hl, str?
-    ld      de, parsing.input_buffer
-    ld      bc, n?
-    ldir
+    STRCPY  parsing.input_buffer, str?, n?
     ld      a, 0
     ld      (parsing.parse_idx), a
     ld      a, n?
@@ -114,6 +119,34 @@ UT_ParseName:
     call   parsing.parse_name
     nop ; ASSERTION A == 0
     TEST_MEMORY_WORD    parsing.parse_idx, len3
+
+    TC_END
+
+    ENDMODULE
+
+    MODULE TestSuit_Dictionary
+
+UT_Strcmp:
+    ld      hl, test_str1
+    ld      a, len1
+    ld      de, test_str1
+    ld      b, len1
+    call    dictionary.strcmp
+    TEST_FLAG_Z
+
+    ld      hl, test_str3
+    ld      a, len3
+    ld      de, test_str4
+    ld      b, len4
+    call    dictionary.strcmp
+    TEST_FLAG_NZ
+
+    ld      hl, test_str4
+    ld      a, len4
+    ld      de, test_str1
+    ld      b, len3
+    call    dictionary.strcmp
+    TEST_FLAG_NZ
 
     TC_END
 
